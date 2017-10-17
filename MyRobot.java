@@ -60,11 +60,43 @@ public class MyRobot {
 	    //}
 	    //else if (mode == 2){
 	    	System.out.println("will close case");
-	    	gotoxy(725, 890); click(); sleep(100); //open excel zoom = 100%
+	    	/*gotoxy(725, 890); click(); sleep(100); //open excel zoom = 100%
 	    	gotoxy(1000, 890); click(); sleep(100); // open chrome zoom = 80%
 	    	gotoxy(875, 250); click(); sleep(100); //activate first name first cell;
 	    	gotoxy(850, 100); click(); sleep(100); //copy
-	    	gotoxy(40, 365); click(); sleep(100); rightClick(); sleep(100); gotoxy(50, 500); click(); sleep(100);
+	    	gotoxy(40, 365); click(); sleep(100); //activate COI first name field
+	    	rightClick(); sleep(100); gotoxy(50, 500); click(); sleep(100); //paste first name y + 135
+	    	
+	    	gotoxy(875, 250); click(); sleep(100); //reactive excel
+	    	//gotoxy(950, 250); click(); //activate first last name manually
+	    	manuPress(39); //activate last name using keystroke
+	    	gotoxy(850, 100); click(); sleep(100); //copy
+	    	gotoxy(40, 325); click(); sleep(100); //activate COI last name field
+	    	rightClick(); sleep(100); gotoxy(50, 460); click(); sleep(100);//paste
+	    	
+	    	gotoxy(90, 640); click(); sleep(5000); // search
+	    	gotoxy(200, 305); click(); sleep(2000); //choose first case
+	    	
+	    	//WHAT IF CASE EXISTS?
+	    	
+	    	//WHAT IF CASE DOES NOT EXIST? 
+	    	//WHAT IF CASE IS ALREADY CLOSED?
+	    	
+	    	gotoxy(875, 250); click(); sleep(100); //reactive excel
+	    	manuPress(37); manuPress(40); sleep(100);//next first name activated
+	    	
+	    	gotoxy(740, 5); click(); sleep(100);  //mazimize page
+	    	//PROBLEM: select review tab is absolute
+	    	gotoxy(500, 470); click(); sleep(5000); manuPress(34); sleep(100); //open review tab and scroll down
+	    	gotoxy(230, 800); click(); sleep(5000); *///enter edit mode > review
+	    	gotoxy(1000, 890); click(); sleep(100); // test
+	    	gotoxy(900, 565); click(); sleep(100); gotoxy(900, 610); click(); //confirm no vp conflict
+	    	//gotoxy(900, 710); click(); type("Relative: Employee notified on 9-28-2017"); sleep(100); //describe notification
+	    	////gotoxy(230, 800); click(); sleep(200); //save;
+	    	
+	    	//gotoxy(640, 470); click(); sleep(150); //open management plan
+	    	//gotoxy(1350, 520); click(); sleep(100); //choose no plan required;
+	    	//gotoxy(1350, 470); click(); sleep(2000); //close case
 	    //}
 	    
 	}
