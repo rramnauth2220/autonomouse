@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 import java.util.Scanner;
 
 public class MyRobot {
-
+	
 	Robot MYROBOT;
 	Color SCREEN[][];
 	int SCREEN_X;
@@ -39,25 +39,38 @@ public class MyRobot {
 	    System.out.println("Choose task to automate: \n 1: SUBMIT POTENTIAL CONFLICT CASE\n 2: REVIEW & CLOSE CASE");
 	    Scanner sc0 = new Scanner(System.in);
 	    int task = sc0.nextInt();
-	    int subtask;
+	    int subtask = -1;
+	    int cellnum = 2; //default picks up 2 cells from excel sheet.
 	    
 	    if (task == 2){
-	    	System.out.println("     Case Options: \n      1: REVIEW CASES\n      2: CLOSE CASES");
+	    	System.out.println("     Case Options: \n      1: REVIEW CASES\n      2: CLOSE CASES\n      3: BOTH");
 	    	Scanner sc1 = new Scanner(System.in);
 	    	subtask = sc1.nextInt();
+	    	
+	    	System.out.print("Number of Cells: ");
+	    	Scanner sc7 = new Scanner(System.in);
+	    	int isc7 = sc7.nextInt();
+	    	if (isc7 == 1)
+	    		cellnum = 1;
 	    }
 	    
-	    else
+	    if (task == 1)
 	    	subtask = 0;
-
+		System.out.println("Choose type of case: \n 1: REVIEWED\n 2: CREATED\n *: default to 1: REVIEWED if unknown or unnecessary");
+	    Scanner sc1 = new Scanner(System.in);
+	    int type = sc1.nextInt();
+	    int drop = 0;
+	    if (type == 2)
+	    	drop = 15;
+	    	
 	    System.out.println("# of iterations to perform: ");
 	    Scanner sc = new Scanner(System.in);
 	    int iter = sc.nextInt();
 	    
-	    new MyRobot().go(task, subtask, iter);
+	    new MyRobot().go(task, subtask, drop, iter, cellnum);
 	}
 	
-	void go(int mode, int submode, int num) {
+	void go(int mode, int submode, int drop, int num, int cell) {
 	    initialize();
 	    if (mode == 1){
 	    	gotoxy(1000, 890); click();	//open chrome zoom = 80% full
@@ -73,7 +86,7 @@ public class MyRobot {
 		    	System.out.println("will close case");
 		    	//chrome init 1/2 min established, excel init 1/2 no min established
 		    	for (int j = 0; j < num; j++){
-			    	copyInfoExcel();
+			    	copyInfoExcel(drop, cell);
 			    	
 			    	//WHAT IF CASE EXISTS?
 			    	//WHAT IF CASE DOES NOT EXIST?  > No cases were found that match your search criteria > downshifts screen
@@ -85,18 +98,18 @@ public class MyRobot {
 			    	gotoxy(230, 800); click(); sleep(3000); //TIME CHANGED enter edit mode > review
 			    	//gotoxy(1000, 890); click(); sleep(100); // test
 			    	gotoxy(900, 565); click(); sleep(100); gotoxy(900, 610); click(); sleep(100); //confirm no vp conflict
-			    	gotoxy(900, 710); click(); type("Relative: Employee notified on 9-28-2017"); sleep(100); //describe notification
+			    	gotoxy(900, 710); click(); type("Relative: Employee notified on 11-22-2017"); sleep(100); //describe notification
 			    	gotoxy(230, 800); click(); sleep(2000); //save;
 			    	
 			    	//gotoxy(1000, 890); click(); sleep(100); // test
 			    	gotoxy(1530, 5); click(); sleep(100); manuPress(33); sleep(100); //minimize page;
-		    		retDirectory();
+		    		retDirectory(drop, cell);
 		    	}
 	    	}
 	    	else if (submode == 2){
 	    		System.out.println("Will perform the necessary spaghetti to close the case");
 	    		for (int k = 0; k < num; k++){
-		    		copyInfoExcel();
+		    		copyInfoExcel(drop, cell);
 		    		
 		    		//gotoxy(1000, 890); click(); sleep(100); // test
 		    		gotoxy(740, 5); click(); sleep(100);  //mazimize page
@@ -107,38 +120,80 @@ public class MyRobot {
 		    		gotoxy(900, 160); click(); sleep(2000); //confirm close case
 		    		
 		    		gotoxy(1530, 5); click(); sleep(100); manuPress(33); sleep(100); //minimize page;
-		    		retDirectory();
+		    		retDirectory(drop, cell);
+	    		}
+	    	}
+	    	else if (submode == 3){
+	    		System.out.println("Will review AND close case");
+	    		
+	    		for (int m = 0; m < num; m++){
+		    		copyInfoExcel(drop, cell);
+		    		
+		    		gotoxy(740, 5); click(); sleep(100);  //mazimize page
+			    	//PROBLEM: select review tab is absolute
+			    	gotoxy(500, 470); click(); sleep(5000); manuPress(34); sleep(100); //open review tab and scroll down
+			    	gotoxy(230, 800); click(); sleep(3000); //TIME CHANGED enter edit mode > review
+			    	//gotoxy(1000, 890); click(); sleep(100); // test
+			    	gotoxy(900, 565); click(); sleep(100); gotoxy(900, 610); click(); sleep(100); //confirm no vp conflict
+			    	gotoxy(900, 710); click(); type("Relative: Employee notified on 2-1-2018"); sleep(100); //describe notification
+			    	gotoxy(230, 800); click(); sleep(2000); //save;
+			    	
+			    	gotoxy(740, 5); click(); sleep(100);  //mazimize page
+		    		gotoxy(640, 480); click(); sleep(150); //open management plan
+			    	gotoxy(1350, 530); click(); sleep(100); //choose no plan required;
+			    	gotoxy(900, 160); click(); sleep(100); //confirm no plan required;
+			    	gotoxy(1350, 490); click(); sleep(100); //close case
+		    		gotoxy(900, 160); click(); sleep(2000); //confirm close case
+		    		
+		    		gotoxy(1530, 5); click(); sleep(100); manuPress(33); sleep(100); //minimize page;
+		    		retDirectory(drop, cell);
 	    		}
 	    	}
 	    } 
 	}
 	
-	void copyInfoExcel(){
-		gotoxy(725, 890); click(); sleep(100); //open excel zoom = 100%
-    	gotoxy(1000, 890); click(); sleep(100); // open chrome zoom = 80%
-    	gotoxy(875, 250); click(); sleep(100); //activate first name first cell;
-    	gotoxy(850, 100); click(); sleep(100); //copy
-    	gotoxy(40, 365); click(); sleep(100); //activate COI first name field
-    	rightClick(); sleep(100); gotoxy(50, 500); click(); sleep(100); //paste first name y + 135
+	void copyInfoExcel(int drop, int cell){
+		if (cell != 1){
+			gotoxy(725, 890); click(); sleep(100); //open excel zoom = 100%
+	    	gotoxy(1000, 890); click(); sleep(100); // open chrome zoom = 80%
+	    	gotoxy(875, 250); click(); sleep(100); //activate first name first cell;
+	    	gotoxy(850, 100); click(); sleep(100); //copy
+	    	gotoxy(40, 365 + drop); click(); sleep(100); //activate COI first name field
+	    	rightClick(); sleep(100); gotoxy(50, 500 + drop); click(); sleep(100); //paste first name y + 135
     	
-    	gotoxy(875, 250); click(); sleep(100); //reactive excel
-    	//gotoxy(950, 250); click(); //activate first last name manually
-    	manuPress(39); //activate last name using keystroke
-    	gotoxy(850, 100); click(); sleep(100); //copy
-    	gotoxy(40, 325); click(); sleep(100); //activate COI last name field
-    	rightClick(); sleep(100); gotoxy(50, 460); click(); sleep(100);//paste
-		
-		gotoxy(90, 640); click(); sleep(5000); // search
+    	
+	    	gotoxy(875, 250); click(); sleep(100); //reactive excel
+	    	//gotoxy(950, 250); click(); //activate first last name manually
+	    	manuPress(39); //activate last name using keystroke
+	    	gotoxy(850, 100); click(); sleep(100); //copy
+	    	gotoxy(40, 335 + drop); click(); sleep(100); // activate COI last name field
+	    	rightClick(); sleep(100); gotoxy(50, 460 + drop); click(); sleep(100);//paste
+		}
+		else { //copy case id
+			gotoxy(725, 890); click(); sleep(100); //open excel zoom = 100%
+	    	gotoxy(1000, 890); click(); sleep(100); // open chrome zoom = 80%
+	    	gotoxy(875, 250); click(); sleep(100); //activate first name first cell;
+	    	gotoxy(850, 100); click(); sleep(100); //copy
+	    	gotoxy(40, 302 + drop); click(); sleep(100); //activate COI first name field
+	    	rightClick(); sleep(100); gotoxy(50, 430 + drop); click(); sleep(100); //paste first name y + 135
+		}
+    	
+		gotoxy(90, 640 + drop); click(); sleep(5000); // search
 		gotoxy(200, 305); click(); sleep(2000); //choose first case
 		
 		gotoxy(875, 250); click(); sleep(100); //reactive excel
 		manuPress(37); manuPress(40); sleep(100);//next first name activated
 	}
 	
-	void retDirectory(){
-    	gotoxy(600, 160); click(); sleep(5000); //return to case directory
-    	gotoxy(40, 325); click(); click(); click(); manuPress(8); sleep(100); //manuPress(46); sleep(100); //clear last name field
-    	gotoxy(40, 365); click(); click(); click(); manuPress(8); sleep(100); //clear last name field
+	void retDirectory(int drop, int cell){
+    	gotoxy(600, 170); click(); sleep(5000); //return to case directory
+    	
+    	if (cell != 1){
+    		gotoxy(40, 325 + drop); click(); click(); click(); manuPress(8); sleep(100); //manuPress(46); sleep(100); //clear last name field
+    		gotoxy(40, 365 + drop); click(); click(); click(); manuPress(8); sleep(100); //clear first name field
+    	}
+    	else
+  			gotoxy(40, 302 + drop); click(); click(); click(); manuPress(8); sleep(100); //clear case id field
 	}
 	
 	void initialize() {
